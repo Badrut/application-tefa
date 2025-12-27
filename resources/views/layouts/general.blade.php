@@ -220,94 +220,6 @@
                     </ol>
                 </nav>
                 <!-- END: Breadcrumb -->
-                <!-- BEGIN: Search -->
-                <div class="intro-x relative mr-3 sm:mr-6">
-                    <div class="search hidden sm:block">
-                        <input type="text" class="search__input form-control border-transparent" placeholder="Search...">
-                        <i data-lucide="search" class="search__icon dark:text-slate-500"></i>
-                    </div>
-                    <a class="notification notification--light sm:hidden" href=""> <i data-lucide="search" class="notification__icon dark:text-slate-500"></i> </a>
-                    <div class="search-result">
-                        <div class="search-result__content">
-                            <div class="search-result__content__title">Pages</div>
-                            <div class="mb-5">
-                                <a href="" class="flex items-center">
-                                    <div class="w-8 h-8 bg-success/20 dark:bg-success/10 text-success flex items-center justify-center rounded-full"> <i class="w-4 h-4" data-lucide="inbox"></i> </div>
-                                    <div class="ml-3">Mail Settings</div>
-                                </a>
-                                <a href="" class="flex items-center mt-2">
-                                    <div class="w-8 h-8 bg-pending/10 text-pending flex items-center justify-center rounded-full"> <i class="w-4 h-4" data-lucide="users"></i> </div>
-                                    <div class="ml-3">Users & Permissions</div>
-                                </a>
-                                <a href="" class="flex items-center mt-2">
-                                    <div class="w-8 h-8 bg-primary/10 dark:bg-primary/20 text-primary/80 flex items-center justify-center rounded-full"> <i class="w-4 h-4" data-lucide="credit-card"></i> </div>
-                                    <div class="ml-3">Transactions Report</div>
-                                </a>
-                            </div>
-                            <div class="search-result__content__title">Users</div>
-                            <div class="mb-5">
-                                <a href="" class="flex items-center mt-2">
-                                    <div class="w-8 h-8 image-fit">
-                                        <img alt="Midone - HTML Admin Template" class="rounded-full" src="dist/images/profile-5.jpg">
-                                    </div>
-                                    <div class="ml-3">Kevin Spacey</div>
-                                    <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">kevinspacey@left4code.com</div>
-                                </a>
-                                <a href="" class="flex items-center mt-2">
-                                    <div class="w-8 h-8 image-fit">
-                                        <img alt="Midone - HTML Admin Template" class="rounded-full" src="dist/images/profile-3.jpg">
-                                    </div>
-                                    <div class="ml-3">Russell Crowe</div>
-                                    <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">russellcrowe@left4code.com</div>
-                                </a>
-                                <a href="" class="flex items-center mt-2">
-                                    <div class="w-8 h-8 image-fit">
-                                        <img alt="Midone - HTML Admin Template" class="rounded-full" src="dist/images/profile-14.jpg">
-                                    </div>
-                                    <div class="ml-3">John Travolta</div>
-                                    <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">johntravolta@left4code.com</div>
-                                </a>
-                                <a href="" class="flex items-center mt-2">
-                                    <div class="w-8 h-8 image-fit">
-                                        <img alt="Midone - HTML Admin Template" class="rounded-full" src="dist/images/profile-3.jpg">
-                                    </div>
-                                    <div class="ml-3">Johnny Depp</div>
-                                    <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">johnnydepp@left4code.com</div>
-                                </a>
-                            </div>
-                            <div class="search-result__content__title">Products</div>
-                            <a href="" class="flex items-center mt-2">
-                                <div class="w-8 h-8 image-fit">
-                                    <img alt="Midone - HTML Admin Template" class="rounded-full" src="dist/images/preview-12.jpg">
-                                </div>
-                                <div class="ml-3">Nike Air Max 270</div>
-                                <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">Sport &amp; Outdoor</div>
-                            </a>
-                            <a href="" class="flex items-center mt-2">
-                                <div class="w-8 h-8 image-fit">
-                                    <img alt="Midone - HTML Admin Template" class="rounded-full" src="dist/images/preview-5.jpg">
-                                </div>
-                                <div class="ml-3">Samsung Galaxy S20 Ultra</div>
-                                <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">Smartphone &amp; Tablet</div>
-                            </a>
-                            <a href="" class="flex items-center mt-2">
-                                <div class="w-8 h-8 image-fit">
-                                    <img alt="Midone - HTML Admin Template" class="rounded-full" src="{{ asset('dist/images/preview-12.jpg') }}">
-                                </div>
-                                <div class="ml-3">Samsung Galaxy S20 Ultra</div>
-                                <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">Smartphone &amp; Tablet</div>
-                            </a>
-                            <a href="" class="flex items-center mt-2">
-                                <div class="w-8 h-8 image-fit">
-                                    <img alt="Midone - HTML Admin Template" class="rounded-full" src="{{ asset('dist/images/preview-11.jpg') }}">
-                                </div>
-                                <div class="ml-3">Nike Tanjun</div>
-                                <div class="ml-auto w-48 truncate text-slate-500 text-xs text-right">Sport &amp; Outdoor</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- END: Search -->
                 <!-- BEGIN: Notifications -->
                 <div class="intro-x dropdown mr-4 sm:mr-6">
                     <div class="dropdown-toggle notification notification--bullet cursor-pointer" role="button" aria-expanded="false" data-tw-toggle="dropdown"> <i data-lucide="bell" class="notification__icon dark:text-slate-500"></i> </div>
@@ -442,7 +354,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.produksi') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('admin.produksi')])>
+                <a href="{{ route('admin.produksi') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('admin.produksi*')])>
                     <div class="top-menu__icon"><i data-lucide="settings"></i></div>
                     <div class="top-menu__title">Produksi</div>
                 </a>
@@ -539,30 +451,36 @@
             </li>
             @endrole
             @role('customer')
-            <li>
-                <a href="javascript:;" class="top-menu top-menu--active">
-                    <div class="top-menu__icon"><i data-lucide="home"></i></div>
-                    <div class="top-menu__title">Dashboard</div>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:;" class="top-menu">
-                    <div class="top-menu__icon"><i data-lucide="folder"></i></div>
-                    <div class="top-menu__title">Proyek</div>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:;" class="top-menu">
-                    <div class="top-menu__icon"><i data-lucide="clipboard-list"></i></div>
-                    <div class="top-menu__title">Tugas</div>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:;" class="top-menu">
-                    <div class="top-menu__icon"><i data-lucide="activity"></i></div>
-                    <div class="top-menu__title">Aktivitas</div>
-                </a>
-            </li>
+                    <li>
+                        <a href="{{ route('customer.dashboard') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('customer.dashboard*')])>
+                            <div class="top-menu__icon"><i data-lucide="home"></i></div>
+                            <div class="top-menu__title">Dashboard</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('customer.katalog') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('customer.katalog*')])>
+                            <div class="top-menu__icon"><i data-lucide="shopping-bag"></i></div>
+                            <div class="top-menu__title">Katalog</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="top-menu">
+                            <div class="top-menu__icon"><i data-lucide="help-circle"></i></div>
+                            <div class="top-menu__title">Konsultasi</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="top-menu">
+                            <div class="top-menu__icon"><i data-lucide="package"></i></div>
+                            <div class="top-menu__title">Pesanan</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="top-menu">
+                            <div class="top-menu__icon"><i data-lucide="bar-chart-2"></i></div>
+                            <div class="top-menu__title">Laporan</div>
+                        </a>
+                    </li>
             @endrole
             @role('supplier')
             <li>
@@ -609,7 +527,7 @@
         <!-- BEGIN: JS Assets-->
         @stack('scripts')
         @vite(['resources/js/app.js'])
-        
+
         <script src="{{ asset('dist/js/app.js') }}" defer></script>
         <!-- END: JS Assets-->
     </body>

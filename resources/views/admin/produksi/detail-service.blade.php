@@ -1,24 +1,114 @@
 @extends('layouts.general')
-@section('title' , 'Admin - Data Master')
-@section('page', 'Data Master Jurusan')
+@section('title' , 'Admin Produksi')
+@section('page', 'Produksi')
 
 @section('content')
-                    <div class="">
-                    <div class="intro-y flex flex-col sm:flex-row items-center mt-8">
-                        <h2 class="text-lg font-medium mr-auto">
-                                Manajemen Jurusan
-                        </h2>
-                        <div class="w-full sm:w-auto flex mt-4 sm:mt-0">
-                                <a href="{{ route('admin.master-data.add-major') }}" class="btn btn-primary shadow-md mr-2">Tambah Jurusan Baru</a>
+                <div class="intro-y flex flex-col sm:flex-row items-center mt-8">
+                <h2 class="text-lg font-medium mr-auto">
+                    Service Details
+                </h2>
+                <div class="w-full sm:w-auto flex mt-4 sm:mt-0">
+                    <button class="btn btn-primary shadow-md mr-2">Print</button>
+                    <div class="dropdown ml-auto sm:ml-0">
+                        <button class="dropdown-toggle btn px-2 box" aria-expanded="false" data-tw-toggle="dropdown">
+                            <span class="w-5 h-5 flex items-center justify-center"> <i class="w-4 h-4" data-lucide="plus"></i> </span>
+                        </button>
+                        <div class="dropdown-menu w-40">
+                            <ul class="dropdown-content">
+                                <li>
+                                    <a href="" class="dropdown-item"> <i data-lucide="file" class="w-4 h-4 mr-2"></i> Export Word </a>
+                                </li>
+                                <li>
+                                    <a href="" class="dropdown-item"> <i data-lucide="file" class="w-4 h-4 mr-2"></i> Export PDF </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    @if(session('success') || session('status') || session('message'))
-                        <div class="mt-5 alert alert-primary show flex items-center mb-2" role="alert">
-                            <i data-lucide="graduation-cap" class="w-6 h-6 mr-2"></i>
-                                {{ session('success') ?? session('status') ?? session('message') }}
+                </div>
+            </div>
+            <!-- BEGIN: Service Details -->
+            <div class="intro-y grid grid-cols-11 gap-5 mt-5">
+                <div class="col-span-12 lg:col-span-4 2xl:col-span-3">
+                    <div class="box p-5 rounded-md mb-5">
+                        <div class="h-40 image-fit rounded-md overflow-hidden
+                            before:block before:absolute before:w-full before:h-full
+                            before:top-0 before:left-0 before:z-10
+                            before:bg-gradient-to-t before:from-black before:to-black/10">
+
+                            <img
+                                class="rounded-md absolute inset-0 w-full h-full object-cover"
+                                src="{{ asset('storage/' . optional($service->primaryImage)->file_path ?? 'services/preview-10.jpg') }}"
+                            >
+
+                            <span class="absolute top-0 bg-success text-white text-xs m-5 px-2 py-1 rounded z-10">
+                                {{ $service->is_active ? 'Active' : 'Inactive' }}
+                            </span>
+
+                            <div class="absolute bottom-0 text-white px-5 pb-6 z-10">
+                                <div class="font-medium text-base">
+                                    {{ $service->name }}
+                                </div>
+                                <div class="text-white/90 text-xs mt-1">
+                                    {{ $service->major->name ?? '-' }}
+                                </div>
+                            </div>
                         </div>
-                    @endif
-                    <!-- BEGIN: HTML Table Data -->
+                    </div>
+                    <div class="box p-5 rounded-md">
+                        <div class="flex items-center border-b border-slate-200/60 pb-5 mb-5">
+                            <div class="font-medium text-base">Service Information</div>
+                            <a href="{{ route('admin.produksi.edit-service', $service->id) }}"
+                            class="flex items-center ml-auto text-primary">
+                                <i data-lucide="edit" class="w-4 h-4 mr-2"></i> Edit
+                            </a>
+                        </div>
+
+                        <div class="flex items-center">
+                            <i data-lucide="clipboard" class="w-4 h-4 text-slate-500 mr-2"></i>
+                            Satuan:
+                            <span class="ml-auto font-medium">
+                                {{ $service->unit ?? '-' }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="wallet" class="w-4 h-4 text-slate-500 mr-2"></i>
+                            Harga:
+                            <span class="ml-auto font-medium">
+                                Rp {{ number_format($service->base_price,0,',','.') }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="clock" class="w-4 h-4 text-slate-500 mr-2"></i>
+                            Estimasi Jam:
+                            <span class="ml-auto font-medium">
+                                {{ $service->estimated_hours ?? '-' }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="award" class="w-4 h-4 text-slate-500 mr-2"></i>
+                            Level Service:
+                            <span class="ml-auto font-medium">
+                                {{ $service->service_level ?? '-' }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="activity" class="w-4 h-4 text-slate-500 mr-2"></i>
+                            Status:
+                            <span class="ml-auto px-2 py-1 text-xs rounded
+                                {{ $service->is_active ? 'bg-success text-white' : 'bg-danger text-white' }}">
+                                {{ $service->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-12 lg:col-span-7 2xl:col-span-8">
+                    <h2 class="text-lg font-medium mr-auto">
+                        History Layanan
+                    </h2>
                     <div class="intro-y box p-5 mt-5">
                         <div class="flex flex-col sm:flex-row sm:items-end xl:items-start">
                             <form id="tabulator-html-filter-form" class="xl:flex sm:mr-auto" >
@@ -26,8 +116,8 @@
                                         <label class="w-12 flex-none xl:w-auto xl:flex-initial mr-2">Kolom</label>
                                     <select id="tabulator-html-filter-field" class="form-select w-full sm:w-32 2xl:w-full mt-2 sm:mt-0 sm:w-auto">
                                             <option value="name">Nama</option>
-                                            <option value="category">Kategori</option>
-                                            <option value="remaining_stock">Stok Tersisa</option>
+                                            <option value="major">Jurusan</option>
+                                            <option value="estimated_hours">Estimasi Jam</option>
                                     </select>
                                 </div>
                                 <div class="sm:flex items-center sm:mr-4 mt-2 xl:mt-0">
@@ -78,8 +168,9 @@
                             <div id="tabulator" class="mt-5 table-report table-report--tabulator"></div>
                         </div>
                     </div>
-                    <!-- END: HTML Table Data -->
                 </div>
+            </div>
+            <!-- END: Service Details -->
 @endsection
 @push('scripts')
 <script>
@@ -92,13 +183,13 @@ const ICON_EDIT = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16
 const ICON_DETAIL = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
 document.addEventListener('DOMContentLoaded', function () {
 
-    const majors = @json($majors);
+    const majors = ;
 
     const columns = [
         { title: "ID", field: "id", width: 80, filterable: false },
         { title: "Kode", field: "code" , width: 120},
         { title: "Nama", field: "name" , width: 200},
-        { title: "Kaprodi", field: "head_teacher" },
+        { title: "Jurusan", field: "major" },
         { title: "Deskripsi", field: "description" },
         {
             title: "Aksi",
@@ -106,18 +197,18 @@ document.addEventListener('DOMContentLoaded', function () {
             headerHozAlign: "center",
             filterable: false,
             formatter: function (cell) {
-                const majorID = cell.getRow().getData().id;
+                const id = cell.getRow().getData().id;
 
                 return `
-                    <a href="/admin/master/majors/show/${majorID}"
+                    <a href="/admin/produksi/service/${id}"
                     class="btn btn-sm btn-primary p-1.5 inline-flex items-center justify-center mr-1"
                     title="Detail">
                         ${ICON_DETAIL}
                     </a>
 
                     <form method="POST"
-                        action="/admin/master/majors/${majorID}"
-                        onsubmit="return confirm('Hapus major ini?')"
+                        action="/admin/produksi/service/${id}"
+                        onsubmit="return confirm('Hapus service ini?')"
                         style="display:inline;">
 
                         <input type="hidden" name="_token" value="${csrf}">
@@ -130,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </form>
 
 
-                    <a href="/admin/master/majors/edit/${majorID}"
+                    <a href="/admin/produksi/service/${id}/edit"
                     class="btn btn-sm btn-warning ml-1">
                         ${ICON_EDIT}
                     </a>
@@ -199,5 +290,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-
-

@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TeacherSeeder::class,
             StudentSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            ServiceSeeder::class,
         ]);
     }
 }
