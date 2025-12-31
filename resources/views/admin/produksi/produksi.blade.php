@@ -104,7 +104,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex justify-center lg:justify-end items-center p-5 border-t border-slate-200/60 dark:border-darkmode-400">
-                                                    <a class="flex items-center text-primary mr-auto" href="{{ route('admin.produksi.detail-product' , $product->id) }}"> <i data-lucide="eye" class="w-4 h-4 mr-1"></i> Preview </a>
+                                                    <a class="flex items-center text-primary mr-auto" href="{{ route('admin.produksi.detail-product' , $product->id) }}"> <i data-lucide="eye" class="w-4 h-4 mr-1"></i> Detail </a>
                                                     <a class="flex items-center mr-3" href="{{ route('admin.produksi.edit' , $product->id) }}"> <i data-lucide="check-square" class="w-4 h-4 mr-1"></i> Edit </a>
                                                     <a class="flex items-center text-danger delete-product" href="javascript:;" data-id="{{ $product->id }}"> <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> Delete </a>
                                                 </div>

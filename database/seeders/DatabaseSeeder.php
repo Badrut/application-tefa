@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ProductSeeder::class,
             ServiceSeeder::class,
+            ConsultationSeeder::class,
+            ChatMessageSeeder::class,
+            QuotationSeeder::class,
+            QuotationItemSeeder::class
         ]);
     }
 }

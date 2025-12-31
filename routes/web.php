@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatMessageController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\LaporanController;
@@ -8,8 +10,11 @@ use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProyekController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\TransaksiController;
+use App\Models\Quotation;
 use Illuminate\Support\Facades\Route;
+use Termwind\Question;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,6 +29,29 @@ Route::middleware('auth')->group(function (){
     Route::post('/profile/update-picture', [ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
     Route::put('/profile/update-profile', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
     Route::put('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::post('/konsultation/{id}/message', [ChatMessageController::class, 'storeMessage'])->name('konsultation.message.store');
+    Route::get('/proyek' , [QuotationController::class  , 'index'])->name('proyek.index');
+    Route::get('/proyek/create' , [QuotationController::class  , 'create'])->name('proyek.create');
+    Route::post('/proyek/create' , [QuotationController::class  , 'store'])->name('proyek.store');
+    Route::get('/proyek/edit/{quotation}' , [QuotationController::class  , 'edit'])->name('proyek.edit');
+    Route::get('/proyek/detail/{quotation}' , [QuotationController::class  , 'show'])->name('proyek.show');
+    Route::put('/proyek/{quotation}' , [QuotationController::class  , 'update'])->name('proyek.update');
+    Route::delete('/proyek/{id}' , [QuotationController::class  , 'destroy'])->name('proyek.destroy');
+
+    Route::get('produksi', [ProduksiController::class, 'index'])->name('produksi');
+    Route::get('produksi/add-product' , [ProduksiController::class , 'create'])->name('produksi.add-product');
+    Route::get('produksi/add-service' , [ProduksiController::class , 'createService'])->name('produksi.add-service');
+    Route::post('produksi', [ProduksiController::class, 'store'])->name('produksi.store');
+    Route::post('produksi/service', [ProduksiController::class, 'storeService'])->name('produksi.store-service');
+    Route::get('produksi/{id}/edit', [ProduksiController::class, 'edit'])->name('produksi.edit');
+    Route::put('produksi/{id}', [ProduksiController::class, 'update'])->name('produksi.update');
+    Route::get('produksi/{id}/product' , [ProduksiController::class , 'show'])->name('produksi.detail-product');
+    Route::get('produksi/{id}/service' , [ProduksiController::class , 'showService'])->name('produksi.detail-service');
+    Route::get('produksi/service/{id}/edit', [ProduksiController::class, 'editService'])->name('produksi.edit-service');
+    Route::put('produksi/service/{id}', [ProduksiController::class, 'updateService'])->name('produksi.update-service');
+    Route::delete('produksi/service/{id}', [ProduksiController::class, 'destroyService'])->name('produksi.destroy-service');
+    Route::delete('produksi/photos/{id}', [ProduksiController::class, 'destroyPhoto'])->name('produksi.photo-destroy');
+    Route::delete('produksi/{id}', [ProduksiController::class, 'destroy'])->name('produksi.destroy');
 });
 
 Route::middleware(['auth' , 'role:admin'])->group(function () {
@@ -47,20 +75,7 @@ Route::middleware(['auth' , 'role:admin'])->group(function () {
 
 
     Route::get('/admin/transaksi', [TransaksiController::class, 'admin'])->name('admin.transaksi');
-    Route::get('/admin/produksi', [ProduksiController::class, 'admin'])->name('admin.produksi');
-    Route::get('/admin/produksi/add-product' , [ProduksiController::class , 'create'])->name('admin.produksi.add-product');
-    Route::get('/admin/produksi/add-service' , [ProduksiController::class , 'createService'])->name('admin.produksi.add-service');
-    Route::post('/admin/produksi', [ProduksiController::class, 'store'])->name('admin.produksi.store');
-    Route::post('/admin/produksi/service', [ProduksiController::class, 'storeService'])->name('admin.produksi.store-service');
-    Route::get('/admin/produksi/{id}/edit', [ProduksiController::class, 'edit'])->name('admin.produksi.edit');
-    Route::put('/admin/produksi/{id}', [ProduksiController::class, 'update'])->name('admin.produksi.update');
-    Route::get('/admin/produksi/{id}/product' , [ProduksiController::class , 'show'])->name('admin.produksi.detail-product');
-    Route::get('/admin/produksi/{id}/service' , [ProduksiController::class , 'showService'])->name('admin.produksi.detail-service');
-    Route::get('/admin/produksi/service/{id}/edit', [ProduksiController::class, 'editService'])->name('admin.produksi.edit-service');
-    Route::put('/admin/produksi/service/{id}', [ProduksiController::class, 'updateService'])->name('admin.produksi.update-service');
-    Route::delete('/admin/produksi/service/{id}', [ProduksiController::class, 'destroyService'])->name('admin.produksi.destroy-service');
-    Route::delete('/admin/produksi/photos/{id}', [ProduksiController::class, 'destroyPhoto'])->name('admin.produksi.photo-destroy');
-    Route::delete('/admin/produksi/{id}', [ProduksiController::class, 'destroy'])->name('admin.produksi.destroy');
+
 
     Route::get('/admin/proyek', [ProyekController::class, 'admin'])->name('admin.proyek');
     Route::get('/admin/laporan', [LaporanController::class, 'admin'])->name('admin.laporan');
@@ -68,6 +83,10 @@ Route::middleware(['auth' , 'role:admin'])->group(function () {
 
 Route::middleware(['auth' , 'role:teacher'])->group(function () {
     Route::get('/teacher/dashboard', [DashboardController::class, 'teacher'])->name('teacher.dashboard');
+    Route::get('/teacher/konsultation', [ChatMessageController::class, 'teacher'])->name('teacher.konsultation');
+    Route::get('/teacher/konsultation/{id}/chat', [ChatMessageController::class, 'showConversation'])->name('teacher.konsultation.chat');
+
+
 });
 
 Route::middleware(['auth' , 'role:student'])->group(function () {
@@ -79,6 +98,11 @@ Route::middleware(['auth' , 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', [DashboardController::class, 'customer'])->name('customer.dashboard');
     Route::get('/customer/katalog/{id}/service' , [KatalogController::class , 'showService'])->name('customer.katalog.detail-service');
     Route::get('/customer/katalog/{id}/product' , [KatalogController::class , 'showProduct'])->name('customer.katalog.detail-product');
+    Route::get('/customer/konsultation' , [ChatMessageController::class , 'customer'])->name('customer.konsultation');
+    Route::get('/customer/konsultation/start/{teacher}', [ChatMessageController::class, 'startConsultation'])->name('customer.konsultation.start');
+    Route::get('/customer/konsultation/{id}/chat', [ChatMessageController::class, 'showConversation'])->name('customer.konsultation.chat');
+    Route::get('/customer/konsultation/create' , [ConsultationController::class  , 'create'])->name('customer.consultation.create');
+    Route::post('/customer/konsultation' , [ConsultationController::class  , 'store'])->name('customer.consultation.store');
 });
 
 Route::middleware(['auth' , 'role:supplier'])->group(function () {

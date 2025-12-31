@@ -41,7 +41,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.produksi') }}" class="menu">
+                        <a href="{{ route('produksi') }}" class="menu">
                             <div class="menu__icon"><i data-lucide="settings"></i></div>
                             <div class="menu__title">Produksi</div>
                         </a>
@@ -354,7 +354,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.produksi') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('admin.produksi*')])>
+                <a href="{{ route('produksi') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('admin.produksi*')])>
                     <div class="top-menu__icon"><i data-lucide="settings"></i></div>
                     <div class="top-menu__title">Produksi</div>
                 </a>
@@ -420,15 +420,21 @@
             @endrole
             @role('teacher')
             <li>
-                <a href="javascript:;" class="top-menu top-menu--active">
+                <a href="{{ route('teacher.dashboard') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('teacher.dashboard*')])>
                     <div class="top-menu__icon"><i data-lucide="home"></i></div>
                     <div class="top-menu__title">Dashboard</div>
                 </a>
             </li>
             <li>
-                <a href="javascript:;" class="top-menu">
+                <a href="{{ route('proyek.index') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('proyek*')])>
                     <div class="top-menu__icon"><i data-lucide="folder"></i></div>
                     <div class="top-menu__title">Proyek</div>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('produksi') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('produksi*')])>
+                    <div class="top-menu__icon"><i data-lucide="settings"></i></div>
+                    <div class="top-menu__title">Produksi</div>
                 </a>
             </li>
             <li>
@@ -444,7 +450,7 @@
                 </a>
             </li>
             <li>
-                <a href="javascript:;" class="top-menu">
+                <a href="{{ route('teacher.konsultation') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('teacher.konsultation*')])>
                     <div class="top-menu__icon"><i data-lucide="message-circle"></i></div>
                     <div class="top-menu__title">Chat</div>
                 </a>
@@ -464,9 +470,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="javascript:;" class="top-menu">
+                        <a href="{{ route('customer.konsultation') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('customer.konsultation*')])>
                             <div class="top-menu__icon"><i data-lucide="help-circle"></i></div>
                             <div class="top-menu__title">Konsultasi</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('proyek.index') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('proyek*')])>
+                            <div class="top-menu__icon"><i data-lucide="help-circle"></i></div>
+                            <div class="top-menu__title">Proyek</div>
                         </a>
                     </li>
                     <li>

@@ -62,4 +62,15 @@ class User extends Authenticatable
     {
         return $this->hasOne(Teacher::class, 'user_id', 'id');
     }
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
 }

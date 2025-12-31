@@ -1,11 +1,11 @@
 @extends('layouts.general')
-@section('title' , 'Customer Produksi')
+@section('title' , 'Admin Produksi')
 @section('page', 'Produksi')
 
 @section('content')
 
                     <h2 class="intro-y text-lg font-medium mt-10">
-                        Katalog Produk & Jasa
+                        Manajemen Produksi
                     </h2>
                                 <div class="intro-y flex justify-center mt-6">
                         <ul class=" pricing-tabs nav nav-pills w-auto box rounded-full mx-auto overflow-hidden " role="tablist" >
@@ -27,6 +27,32 @@
                             <div id="layout-1-monthly-fees" class="tab-pane active" role="tabpanel" aria-labelledby="layout-1-monthly-fees-tab">
                                 <div class="grid grid-cols-12 gap-6 mt-5">
                                     <div class="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
+                                        <a href="{{ route('produksi.add-product') }}" class="btn btn-primary shadow-md mr-2">Tambah Produk Baru</a>
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle btn px-2 box" aria-expanded="false" data-tw-toggle="dropdown">
+                                                <span class="w-5 h-5 flex items-center justify-center"> <i class="w-4 h-4" data-lucide="plus"></i> </span>
+                                            </button>
+                                            <div class="dropdown-menu w-40">
+                                                <ul class="dropdown-content">
+                                                    <li>
+                                                        <a href="" class="dropdown-item"> <i data-lucide="printer" class="w-4 h-4 mr-2"></i> Print </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="" class="dropdown-item"> <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to Excel </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="" class="dropdown-item"> <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to PDF </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="hidden md:block mx-auto text-slate-500">
+                                            @if($products->total())
+                                                Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} entries
+                                            @else
+                                                Showing 0 entries
+                                            @endif
+                                        </div>
                                         <form method="GET" action="{{ route('produksi') }}" class="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
                                             <div class="flex items-center">
                                                 <div class="w-56 relative text-slate-500">
@@ -78,7 +104,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex justify-center lg:justify-end items-center p-5 border-t border-slate-200/60 dark:border-darkmode-400">
-                                                    <a class="flex items-center text-white mr-auto btn btn-primary" href="{{ route('customer.katalog.detail-product' , $product->id) }}"> <i data-lucide="shopping-bag" class="w-4 h-4 mr-1"></i> Pesan </a>
+                                                    <a class="flex items-center text-primary mr-auto" href="{{ route('produksi.detail-product' , $product->id) }}"> <i data-lucide="eye" class="w-4 h-4 mr-1"></i> Detail </a>
+                                                    <a class="flex items-center mr-3" href="{{ route('produksi.edit' , $product->id) }}"> <i data-lucide="check-square" class="w-4 h-4 mr-1"></i> Edit </a>
+                                                    <a class="flex items-center text-danger delete-product" href="javascript:;" data-id="{{ $product->id }}"> <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> Delete </a>
                                                 </div>
                                             </div>
                                     </div>
@@ -96,6 +124,32 @@
                             <div id="layout-1-annual-fees" class="tab-pane" role="tabpanel" aria-labelledby="layout-1-annual-fees-tab">
                                 <div class="grid grid-cols-12 gap-6 mt-5">
                                     <div class="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
+                                        <a href="{{ route('produksi.add-service') }}" class="btn btn-primary shadow-md mr-2">Tambah Jasa Baru</a>
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle btn px-2 box" aria-expanded="false" data-tw-toggle="dropdown">
+                                                <span class="w-5 h-5 flex items-center justify-center"> <i class="w-4 h-4" data-lucide="plus"></i> </span>
+                                            </button>
+                                            <div class="dropdown-menu w-40">
+                                                <ul class="dropdown-content">
+                                                    <li>
+                                                        <a href="" class="dropdown-item"> <i data-lucide="printer" class="w-4 h-4 mr-2"></i> Print </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="" class="dropdown-item"> <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to Excel </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="" class="dropdown-item"> <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to PDF </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="hidden md:block mx-auto text-slate-500">
+                                            @if($products->total())
+                                                Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} entries
+                                            @else
+                                                Showing 0 entries
+                                            @endif
+                                        </div>
                                         <form method="GET" action="{{ route('produksi') }}" class="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
                                             <div class="flex items-center">
                                                 <div class="w-56 relative text-slate-500">
@@ -147,8 +201,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex justify-center lg:justify-end items-center p-5 border-t border-slate-200/60 dark:border-darkmode-400">
-                                                    <a class="flex items-center text-white btn btn-primary mr-auto" href="{{ route('customer.katalog.detail-service' , $service->id) }}"> <i data-lucide="shopping-bag" class="w-4 h-4 mr-1"></i> Pesan </a>
-
+                                                    <a class="flex items-center text-primary mr-auto" href="{{ route('produksi.detail-service' , $service->id) }}"> <i data-lucide="eye" class="w-4 h-4 mr-1"></i> Preview </a>
+                                                    <a class="flex items-center mr-3" href="{{ route('produksi.edit-service' , $service->id) }}"> <i data-lucide="check-square" class="w-4 h-4 mr-1"></i> Edit </a>
+                                                    <a class="flex items-center text-danger delete-service" href="javascript:;" data-id="{{ $service->id }}"> <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> Delete </a>
                                                 </div>
                                             </div>
                                     </div>

@@ -29,13 +29,13 @@ class UserSeeder extends Seeder
             ['admin', 'admin@skanda.id', 'Administrator Sistem', 'admin'],
 
             ['budi.guru', 'budi@guru.id', 'Budi Santoso', 'teacher'],
-            ['siti.guru', 'siti@guru.id', 'Siti Aminah', 'teacher'],
+            ['guru', 'siti@guru.id', 'Siti Aminah', 'teacher'],
 
             ['andi.siswa', 'andi@siswa.id', 'Andi Pratama', 'student'],
             ['rina.siswa', 'rina@siswa.id', 'Rina Maharani', 'student'],
 
             ['ahmad.customer', 'ahmad@customer.id', 'Ahmad Fauzi', 'customer'],
-            ['dewi.customer', 'dewi@customer.id', 'Dewi Lestari', 'customer'],
+            ['customer', 'dewi@customer.id', 'Dewi Lestari', 'customer'],
 
             ['supplier.jaya', 'jaya@supplier.id', 'PT Jaya Abadi', 'supplier'],
             ['supplier.makmur', 'makmur@supplier.id', 'CV Makmur Sejahtera', 'supplier'],

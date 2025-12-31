@@ -14,22 +14,33 @@ use Illuminate\Support\Facades\Log;
 
 class ProduksiController extends Controller
 {
-    public function admin(Request $request){
+    public function index(Request $request)
+    {
+        $user = auth()->user();
         $q = $request->input('q');
         $perPage = (int) $request->input('per_page', 12);
 
-        $query = Product::with('category', 'major' , 'primaryImage' , 'files');
+        $productQuery = Product::with('category', 'major', 'primaryImage', 'files');
+
+        if ($user->hasRole('teacher')) {
+            $productQuery->where('major_id', $user->teacher->major_id);
+        }
 
         if ($q) {
-            $query->where(function($sub) use ($q) {
+            $productQuery->where(function($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
                     ->orWhere('description', 'like', "%{$q}%");
             });
         }
 
-        $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        $products = $productQuery->orderBy('created_at', 'desc')->paginate($perPage);
 
         $serviceQuery = Service::with('major', 'primaryImage', 'files');
+
+        if ($user->hasRole('teacher')) {
+            $serviceQuery->where('major_id', $user->teacher->major_id);
+        }
+
         if ($q) {
             $serviceQuery->where(function($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
@@ -39,14 +50,14 @@ class ProduksiController extends Controller
 
         $services = $serviceQuery->orderBy('created_at', 'desc')->paginate($perPage);
 
-        return view('admin.produksi.produksi', compact('products', 'services'));
+        return view('general.produksi.produksi', compact('products', 'services'));
     }
 
     public function create(){
         $categories = Category::all();
         $majors = Major::all();
 
-        return view('admin.produksi.add-product' , compact('categories' , 'majors'));
+        return view('general.produksi.add-product' , compact('categories' , 'majors'));
     }
 
     public function store(Request $request)
@@ -65,6 +76,10 @@ class ProduksiController extends Controller
             'photos.*' => 'image|mimes:jpg,jpeg,png|max:5120',
         ]);
         $data['is_active'] = $request->has('is_active');
+        $user = auth()->user();
+         if ($user->hasRole('teacher')) {
+            $data['major_id'] = $user->teacher->major_id;
+        }
 
         DB::beginTransaction();
         $storedPaths = [];
@@ -94,7 +109,7 @@ class ProduksiController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.produksi')->with('success', 'Produk berhasil dibuat');
+            return redirect()->route('produksi')->with('success', 'Produk berhasil dibuat');
         } catch (\Throwable $e) {
             DB::rollBack();
             foreach ($storedPaths as $p) {
@@ -109,7 +124,7 @@ class ProduksiController extends Controller
     {
         $majors = Major::all();
 
-        return view('admin.produksi.add-service', compact('majors'));
+        return view('general.produksi.add-service', compact('majors'));
     }
 
     public function storeService(Request $request)
@@ -128,7 +143,10 @@ class ProduksiController extends Controller
             'photos.*' => 'image|mimes:jpg,jpeg,png|max:5120',
         ]);
         $data['is_active'] = $request->has('is_active');
-
+        $user = auth()->user();
+         if ($user->hasRole('teacher')) {
+            $data['major_id'] = $user->teacher->major_id;
+        }
         DB::beginTransaction();
         $storedPaths = [];
         try {
@@ -157,12 +175,13 @@ class ProduksiController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.produksi')->with('success', 'Jasa berhasil dibuat');
+            return redirect()->route('produksi')->with('success', 'Jasa berhasil dibuat');
         } catch (\Throwable $e) {
             DB::rollBack();
             foreach ($storedPaths as $p) {
                 try { Storage::disk('public')->delete($p); } catch (\Throwable $__e) {}
             }
+            dd($e->getMessage());
             Log::error('Produksi storeService error: ' . $e->getMessage());
             return back()->withInput()->with('message', 'Gagal menyimpan service: ' . $e->getMessage());
         }
@@ -171,7 +190,7 @@ class ProduksiController extends Controller
     public function showService($id)
     {
         $service = Service::with('files', 'major')->findOrFail($id);
-        return view('admin.produksi.detail-service', compact('service'));
+        return view('general.produksi.detail-service', compact('service'));
     }
 
     public function editService($id)
@@ -179,7 +198,7 @@ class ProduksiController extends Controller
         $service = Service::with('files', 'major')->findOrFail($id);
         $majors = Major::all();
 
-        return view('admin.produksi.edit-service', compact('service', 'majors'));
+        return view('general.produksi.edit-service', compact('service', 'majors'));
     }
 
     public function updateService(Request $request, $id)
@@ -200,7 +219,10 @@ class ProduksiController extends Controller
 
         $service = Service::findOrFail($id);
         $data['is_active'] = $request->has('is_active');
-
+        $user = auth()->user();
+         if ($user->hasRole('teacher')) {
+            $data['major_id'] = $user->teacher->major_id;
+        }
         DB::beginTransaction();
         $storedPaths = [];
         try {
@@ -234,7 +256,7 @@ class ProduksiController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.produksi')->with('success', 'Service berhasil diperbarui');
+            return redirect()->route('produksi')->with('success', 'Service berhasil diperbarui');
         } catch (\Throwable $e) {
             DB::rollBack();
             foreach ($storedPaths as $p) {
@@ -271,7 +293,7 @@ class ProduksiController extends Controller
 
     public function show($id){
         $product = Product::with('files', 'category', 'major')->findOrFail($id);
-        return view('admin.produksi.detail-product' , compact('product'));
+        return view('general.produksi.detail-product' , compact('product'));
     }
 
     public function edit($id)
@@ -280,7 +302,7 @@ class ProduksiController extends Controller
         $categories = Category::all();
         $majors = Major::all();
 
-        return view('admin.produksi.edit-product', compact('product', 'categories', 'majors'));
+        return view('general.produksi.edit-product', compact('product', 'categories', 'majors'));
     }
 
     public function update(Request $request, $id)
@@ -299,7 +321,10 @@ class ProduksiController extends Controller
         ]);
         $product = Product::findOrFail($id);
         $data['is_active'] = $request->has('is_active');
-
+        $user = auth()->user();
+         if ($user->hasRole('teacher')) {
+            $data['major_id'] = $user->teacher->major_id;
+        }
         DB::beginTransaction();
         $storedPaths = [];
         try {
@@ -333,7 +358,7 @@ class ProduksiController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.produksi')->with('success', 'Produk berhasil diperbarui');
+            return redirect()->route('produksi')->with('success', 'Produk berhasil diperbarui');
         } catch (\Throwable $e) {
             DB::rollBack();
             foreach ($storedPaths as $p) {
@@ -348,7 +373,6 @@ class ProduksiController extends Controller
     {
         $upload = FileUpload::findOrFail($id);
 
-        // delete file from storage
         if ($upload->file_path) {
             Storage::disk('public')->delete($upload->file_path);
         }
