@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProyekController;
@@ -52,6 +53,8 @@ Route::middleware('auth')->group(function (){
     Route::delete('produksi/service/{id}', [ProduksiController::class, 'destroyService'])->name('produksi.destroy-service');
     Route::delete('produksi/photos/{id}', [ProduksiController::class, 'destroyPhoto'])->name('produksi.photo-destroy');
     Route::delete('produksi/{id}', [ProduksiController::class, 'destroy'])->name('produksi.destroy');
+
+    Route::get('order' , [OrderController::class , 'index'])->name('order.index');
 });
 
 Route::middleware(['auth' , 'role:admin'])->group(function () {
@@ -103,6 +106,9 @@ Route::middleware(['auth' , 'role:customer'])->group(function () {
     Route::get('/customer/konsultation/{id}/chat', [ChatMessageController::class, 'showConversation'])->name('customer.konsultation.chat');
     Route::get('/customer/konsultation/create' , [ConsultationController::class  , 'create'])->name('customer.consultation.create');
     Route::post('/customer/konsultation' , [ConsultationController::class  , 'store'])->name('customer.consultation.store');
+
+    Route::post('/quotations/{quotation}/approve', [OrderController::class, 'approve'])
+    ->name('quotations.approve');
 });
 
 Route::middleware(['auth' , 'role:supplier'])->group(function () {

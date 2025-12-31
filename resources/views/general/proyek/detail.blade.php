@@ -17,11 +17,13 @@
                     <div class="">
                     <div class="intro-y flex flex-col sm:flex-row items-center mt-8">
                         <h2 class="text-lg font-medium mr-auto">
-                            Invoice Layout
+                            Detail Proyek Anda
+                            <div class="text-slate-500 text-sm mt-0.5 whitespace-nowrap">detail pesanan anda tertera di bawah silakan hubungi guru jika ada data yang tidak sesuai dan jika sudah sesuai silakan setujui pesanan anda</div>
                         </h2>
-                        <div class="w-full sm:w-auto flex mt-4 sm:mt-0">
+                        <form action="{{ route('quotations.approve' , $quotation) }}" method="POST" class="w-full sm:w-auto flex mt-4 sm:mt-0">
+                            @csrf
                             <button class="btn btn-primary shadow-md mr-2">Setuju</button>
-                        </div>
+                        </form>
                     </div>
                     <!-- BEGIN: Invoice -->
                     <div class="intro-y box overflow-hidden mt-5">
@@ -68,7 +70,7 @@
                                                 </td>
                                                 <td class="text-right border-b dark:border-darkmode-400 w-32">{{ $item->quantity }}</td>
                                                 <td class="text-right border-b dark:border-darkmode-400 w-32">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                                                <td class="text-right border-b dark:border-darkmode-400 w-32 font-medium">Rp {{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}</td>
+                                                <td class="text-right border-b dark:border-darkmode-400 w-40 font-medium">Rp {{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

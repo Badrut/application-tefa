@@ -53,7 +53,34 @@
                         </div>
                         <!-- BEGIN: Users Layout -->
                         @foreach ($quotations as $project)
-                                                    <div class="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+
+                        @php
+                            $statusMap = [
+                                'draft' => [
+                                    'class' => 'bg-pending',
+                                    'label' => 'Rancangan',
+                                ],
+                                'approved' => [
+                                    'class' => 'bg-success',
+                                    'label' => 'Disetujui',
+                                ],
+                                'rejected' => [
+                                    'class' => 'bg-danger',
+                                    'label' => 'Ditolak',
+                                ],
+                                'completed' => [
+                                    'class' => 'bg-primary',
+                                    'label' => 'Selesai',
+                                ],
+                            ];
+
+                            $status = $statusMap[$project->status] ?? [
+                                'class' => 'bg-slate-500/80',
+                                'label' => ucfirst($project->status),
+                            ];
+                        @endphp
+
+                        <div class="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
                             <div class="box">
                                 <div class="p-5">
                                     <div class="h-40 2xl:h-56 image-fit rounded-md overflow-hidden before:block before:absolute before:w-full before:h-full before:top-0 before:left-0 before:z-10 before:bg-gradient-to-t before:from-black before:to-black/10">
@@ -63,7 +90,9 @@
                                                                 : asset('storage/products/preview-10.jpg')
                                                             }}"
                                                         >
-                                        <span class="absolute top-0 bg-pending/80 text-white text-xs m-5 px-2 py-1 rounded z-10">{{ $project->status }}</span>
+                                        <span class="absolute top-0 text-white text-xs m-5 px-2 py-1 rounded z-10 {{ $status['class'] }}">
+                                            {{ $status['label'] }}
+                                        </span>
                                     </div>
                                     <div class="text-slate-600 dark:text-slate-500 mt-5">
                                         <div class="flex items-center"> <i data-lucide="link" class="w-4 h-4 mr-2"></i> Total Anggaran: {{ number_format($project->total_amount, 0, ',', '.') }}</div>
