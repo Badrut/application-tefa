@@ -17,21 +17,25 @@ use Illuminate\Support\Facades\Storage;
 
 class QuotationController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $user = auth()->user();
-        if ($user->hasRole('teacher')) {
-            $quotations = Quotation::where('created_by' , $user->id)
-                                        ->latest()->paginate();
-        } else if ($user->hasRole('customer')) {
-            $quotations = Quotation::where('customer_id', $user->id)
-                                        ->latest()->paginate();
-        }
 
+        if ($user->hasRole('customer')) {
+            $quotations = Quotation::where('customer_id', auth()->id())
+                ->latest()
+                ->paginate();
+        }
+        else if ($user->hasRole('teacher')) {
+            $quotations = Quotation::where('created_by', auth()->id())
+                ->latest()
+                ->paginate();
+        }
         else {
             $quotations = Quotation::latest()->paginate();
         }
-        return view('general.proyek.index' , compact('quotations'));
 
+        return view('general.proyek.index', compact('quotations'));
     }
 
 
@@ -54,6 +58,8 @@ class QuotationController extends Controller
 
     public function store(Request $request)
 {
+
+
     $validated = $request->validate([
         'consultation_id'      => 'required|exists:consultations,id',
         'valid_until'          => 'nullable|date',
@@ -61,8 +67,9 @@ class QuotationController extends Controller
         // items
         'items'                => 'required|array|min:1',
         'items.*.item_type'    => 'required|in:product,service,custom',
-        'items.*.item_id'      => 'nullable|integer',
-        'items.*.item_name'    => 'required|string|max:255',
+        'items.*.product_id' => 'required_if:items.*.item_type,product|nullable|exists:products,id',
+        'items.*.service_id' => 'required_if:items.*.item_type,service|nullable|exists:services,id',
+        'items.*.item_name'    => 'nullable|string|max:255',
         'items.*.quantity'     => 'required|integer|min:1',
         'items.*.unit_price'   => 'required|numeric|min:0',
         'items.*.notes'        => 'nullable|string|max:500',
@@ -76,10 +83,11 @@ class QuotationController extends Controller
     $storedPaths = [];
 
     try {
-        // ambil consultation
-        $consultation = Consultation::findOrFail($validated['consultation_id']);
 
-        // generate quotation code
+        $consultation = Consultation::findOrFail($validated['consultation_id']);
+        $consultation->status = 'in_progress';
+        $consultation->save();
+
         $today = now()->format('Ymd');
         $countToday = Quotation::whereDate('created_at', now())->count() + 1;
         $quotationCode = 'QT-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
@@ -101,11 +109,29 @@ class QuotationController extends Controller
             $subtotal = $item['quantity'] * $item['unit_price'];
             $total += $subtotal;
 
+            $name = $item['item_name'] ?? null;
+            if ($item['item_type'] === 'product') {
+                $product = Product::findOrFail($item['product_id']);
+                $itemId = $product->id;
+                $itemName = $product->name;
+            }
+
+            if ($item['item_type'] === 'service') {
+                $service = Service::findOrFail($item['service_id']);
+                $itemId = $service->id;
+                $itemName = $service->name;
+            }
+
+            if ($item['item_type'] === 'custom') {
+                $itemName = $item['item_name'];
+            }
+
+
             QuotationItem::create([
                 'quotation_id' => $quotation->id,
                 'item_type'    => $item['item_type'],
-                'item_id'      => $item['item_id'] ?? null,
-                'item_name'    => $item['item_name'],
+                'item_id'      => $itemId,
+                'item_name'    => $itemName,
                 'quantity'     => $item['quantity'],
                 'unit_price'   => $item['unit_price'],
                 'subtotal'     => $subtotal,
@@ -152,7 +178,7 @@ class QuotationController extends Controller
                 Storage::disk('public')->delete($path);
             } catch (\Throwable $__e) {}
         }
-
+        dd($e->getMessage());
         Log::error('Quotation store error: '.$e->getMessage());
 
         return back()
@@ -194,8 +220,10 @@ public function update(Request $request, Quotation $quotation)
         // items
         'items'                => 'required|array|min:1',
         'items.*.item_type'    => 'required|in:product,service,custom',
-        'items.*.item_id'      => 'nullable|integer',
-        'items.*.item_name'    => 'required|string|max:255',
+        'items.*.product_id' => 'required_if:items.*.item_type,product|nullable|exists:products,id',
+        'items.*.service_id' => 'required_if:items.*.item_type,service|nullable|exists:services,id',
+        'items.*.item_name' => 'required_if:items.*.item_type,custom|nullable|string|max:255',
+
         'items.*.quantity'     => 'required|integer|min:1',
         'items.*.unit_price'   => 'required|numeric|min:0',
         'items.*.notes'        => 'nullable|string|max:500',
@@ -223,17 +251,35 @@ public function update(Request $request, Quotation $quotation)
         foreach ($incomingItems as $item) {
             $subtotal = $item['quantity'] * $item['unit_price'];
             $total += $subtotal;
+            $itemId = null;
+            $itemName = null;
+            if ($item['item_type'] === 'product') {
+                $product = Product::findOrFail($item['product_id']);
+                $itemId = $product->id;
+                $itemName = $product->name;
+            }
+
+            if ($item['item_type'] === 'service') {
+                $service = Service::findOrFail($item['service_id']);
+                $itemId = $service->id;
+                $itemName = $service->name;
+            }
+
+            if ($item['item_type'] === 'custom') {
+                $itemName = $item['item_name'];
+            }
 
             QuotationItem::create([
                 'quotation_id' => $quotation->id,
                 'item_type'    => $item['item_type'],
-                'item_id'      => $item['item_id'] ?? null,
-                'item_name'    => $item['item_name'],
+                'item_id'      => $itemId,
+                'item_name'    => $itemName,
                 'quantity'     => $item['quantity'],
                 'unit_price'   => $item['unit_price'],
                 'subtotal'     => $subtotal,
                 'notes'        => $item['notes'] ?? null,
             ]);
+
         }
 
         $quotation->update(['total_amount' => $total]);

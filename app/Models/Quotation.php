@@ -29,8 +29,9 @@ class Quotation extends Model {
 
     public function customer()
     {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'customer_id', 'id');
     }
+
 
     public function createdBy()
     {

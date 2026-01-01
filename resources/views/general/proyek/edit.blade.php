@@ -152,10 +152,15 @@
                 <div class="form-inline mt-3 product-field {{ (old("items.$i.item_type", $item->item_type ?? '') == 'product') ? '' : 'hidden' }}">
                     <label class="form-label sm:w-32">Produk</label>
                     <div class="flex-1">
-                        <select name="items[{{ $i }}][item_id]" class="form-control">
+                        <select name="items[{{ $i }}][product_id]" class="form-control">
                             <option value="">-- Pilih Produk --</option>
                             @foreach ($products as $p)
-                                <option value="{{ $p->id }}" {{ old("items.$i.item_id", $item->item_id ?? '') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                                <option
+                                    value="{{ $p->id }}"
+                                    data-price="{{ $p->base_price }}"
+                                    {{ old("items.$i.product_id", $item->item_id) == $p->id ? 'selected' : '' }}>
+                                    {{ $p->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -165,10 +170,15 @@
                 <div class="form-inline mt-3 service-field {{ (old("items.$i.item_type", $item->item_type ?? '') == 'service') ? '' : 'hidden' }}">
                     <label class="form-label sm:w-32">Jasa</label>
                     <div class="flex-1">
-                        <select name="items[{{ $i }}][item_id]" class="form-control">
+                        <select name="items[{{ $i }}][service_id]" class="form-control">
                             <option value="">-- Pilih Jasa --</option>
                             @foreach ($services as $s)
-                                <option value="{{ $s->id }}" {{ old("items.$i.item_id", $item->item_id ?? '') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                <option
+                                    value="{{ $s->id }}"
+                                    data-price="{{ $s->base_price }}"
+                                    {{ old("items.$i.service_id", $item->item_id) == $s->id ? 'selected' : '' }}>
+                                    {{ $s->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -176,7 +186,8 @@
 
 
             <!-- Nama -->
-            <div class="form-inline mt-5">
+            <div class="form-inline mt-5 custom-name-field {{ $item->item_type === 'custom' ? '' : 'hidden' }}">
+
                 <label class="form-label sm:w-32">Nama</label>
                 <div class="flex-1">
                     <input
@@ -218,7 +229,8 @@
             </div>
 
             <!-- Notes -->
-            <div class="form-inline mt-5">
+            <div class="form-inline mt-5 custom-notes-field {{ $item->item_type === 'custom' ? '' : 'hidden' }}">
+
                 <label class="form-label sm:w-32">Catatan</label>
                 <div class="flex-1">
                     <input
@@ -353,7 +365,7 @@ row.innerHTML = `
             <select class="form-control product-select">
                 <option value="">-- Pilih Produk --</option>
                 @foreach ($products as $p)
-                    <option value="{{ $p->id }}">{{ $p->name }}</option>
+                    <option data-price="{{ $s->base_price }} value="{{ $p->id }}">{{ $p->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -366,17 +378,17 @@ row.innerHTML = `
             <select class="form-control service-select">
                 <option value="">-- Pilih Jasa --</option>
                 @foreach ($services as $s)
-                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                    <option data-price="{{ $s->base_price }} value="{{ $s->id }}">{{ $s->name }}</option>
                 @endforeach
             </select>
         </div>
     </div>
 
-    <!-- hidden item_id (REAL SUBMITTED) -->
     <input type="hidden" name="items[${index}][item_id]" class="item-id">
 
     <!-- Nama -->
-    <div class="form-inline mt-5">
+    <div class="form-inline mt-5 custom-name-field hidden">
+
         <label class="form-label sm:w-32">Nama</label>
         <div class="flex-1">
             <input type="text"
@@ -409,7 +421,7 @@ row.innerHTML = `
     </div>
 
     <!-- Catatan -->
-    <div class="form-inline mt-5">
+    <div class="form-inline mt-5 custom-notes-field hidden">
         <label class="form-label sm:w-32">Catatan</label>
         <div class="flex-1">
             <input type="text"
@@ -428,9 +440,9 @@ row.innerHTML = `
         });
 
         document.addEventListener('click', function (e) {
-            if (e.target.closest('.remove-item')) {
-                e.target.closest('tr').remove();
-            }
+            const btn = e.target.closest('.remove-item');
+            if (!btn) return;
+            btn.closest('.item-card').remove();
         });
 
             document.addEventListener('click', function (e) {
@@ -461,16 +473,23 @@ row.innerHTML = `
             if (!typeSelect) return;
 
             const card = typeSelect.closest('.item-card');
+
             const product = card.querySelector('.product-field');
             const service = card.querySelector('.service-field');
+            const customName = card.querySelector('.custom-name-field');
+            const customNotes = card.querySelector('.custom-notes-field');
 
-            // hide all first
-            product.classList.add('hidden');
-            service.classList.add('hidden');
+            // hide all
+            product?.classList.add('hidden');
+            service?.classList.add('hidden');
+            customName?.classList.add('hidden');
+            customNotes?.classList.add('hidden');
 
-            // reset value biar ga ke-submit
-            product.querySelector('select').value = '';
-            service.querySelector('select').value = '';
+            // reset values
+            product?.querySelector('select') && (product.querySelector('select').value = '');
+            service?.querySelector('select') && (service.querySelector('select').value = '');
+            customName?.querySelector('input') && (customName.querySelector('input').value = '');
+            customNotes?.querySelector('input') && (customNotes.querySelector('input').value = '');
 
             if (typeSelect.value === 'product') {
                 product.classList.remove('hidden');
@@ -479,7 +498,13 @@ row.innerHTML = `
             if (typeSelect.value === 'service') {
                 service.classList.remove('hidden');
             }
+
+            if (typeSelect.value === 'custom') {
+                customName.classList.remove('hidden');
+                customNotes.classList.remove('hidden');
+            }
         });
+
 
         row.querySelector('.item-type').addEventListener('change', function () {
     const wrapper = row
