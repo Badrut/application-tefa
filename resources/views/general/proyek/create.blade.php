@@ -98,6 +98,7 @@
                                                             class=" form-control pl-12 @error('valid_until') border-danger @enderror"
                                                             data-single-mode="true"
                                                             data-format="Y-m-d"
+                                                            required
                                                         >
                                                     </div>
 
@@ -214,10 +215,10 @@
                 <div class="form-inline mt-3 product-field hidden">
                     <label class="form-label sm:w-32">Produk</label>
                     <div class="flex-1">
-                        <select name="items[{{ $i }}][item_id]" class="form-control">
+                        <select name="items[{{ $i }}][product_id]" class="form-control">
                             <option value="">-- Pilih Produk --</option>
                             @foreach ($products as $p)
-                                <option value="{{ $p->id }}">{{ $p->name }}</option>
+                                <option data-price="{{ $p->base_price }}" value="{{ $p->id }}">{{ $p->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -227,10 +228,10 @@
                 <div class="form-inline mt-3 service-field hidden">
                     <label class="form-label sm:w-32">Jasa</label>
                     <div class="flex-1">
-                        <select name="items[{{ $i }}][item_id]" class="form-control">
+                        <select name="items[{{ $i }}][service_id]" class="form-control">
                             <option value="">-- Pilih Jasa --</option>
                             @foreach ($services as $s)
-                                <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                <option data-price="{{ $s->base_price }}" value="{{ $s->id }}">{{ $s->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -238,7 +239,7 @@
 
 
             <!-- Nama -->
-            <div class="form-inline mt-5">
+            <div class="form-inline mt-5 custom-name-field hidden">
                 <label class="form-label sm:w-32">Nama</label>
                 <div class="flex-1">
                     <input
@@ -277,7 +278,7 @@
             </div>
 
             <!-- Notes -->
-            <div class="form-inline mt-5">
+            <div class="form-inline mt-5 custom-notes-field hidden">
                 <label class="form-label sm:w-32">Catatan</label>
                 <div class="flex-1">
                     <input
@@ -382,7 +383,7 @@
             const row = document.createElement('div');
 row.classList.add('item-card');
 row.innerHTML = `
-    <div class="relative pl-5 xl:pr-10 py-6 bg-slate-50 dark:bg-transparent dark:border rounded-md">
+    <div class="relative pl-5 xl:pr-10 py-6 bg-slate-50 dark:bg-transparent dark:border rounded-md item-card">
 
         <!-- remove -->
         <button type="button"
@@ -419,10 +420,10 @@ row.innerHTML = `
         <div class="form-inline mt-3 product-field hidden">
             <label class="form-label sm:w-32">Produk</label>
             <div class="flex-1">
-                <select name="items[${index}][item_id]" class="form-control">
+                <select name="items[${index}][product_id]" class="form-control">
                     <option value="">-- Pilih Produk --</option>
                     @foreach ($products as $p)
-                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        <option data-price="{{ $p->base_price }}" value="{{ $p->id }}">{{ $p->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -432,10 +433,10 @@ row.innerHTML = `
         <div class="form-inline mt-3 service-field hidden">
             <label class="form-label sm:w-32">Jasa</label>
             <div class="flex-1">
-                <select name="items[${index}][item_id]" class="form-control">
+                <select name="items[${index}][service_id]" class="form-control">
                     <option value="">-- Pilih Jasa --</option>
                     @foreach ($services as $s)
-                        <option value="{{ $s->id }}">{{ $s->name }}</option>
+                        <option data-price="{{ $s->base_price }}" value="{{ $s->id }}">{{ $s->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -443,7 +444,7 @@ row.innerHTML = `
 
 
         <!-- Nama -->
-        <div class="form-inline mt-5">
+        <div class="form-inline mt-5 custom-name-field hidden">
             <label class="form-label sm:w-32">Nama</label>
             <div class="flex-1">
                 <input
@@ -482,7 +483,7 @@ row.innerHTML = `
         </div>
 
         <!-- Catatan -->
-        <div class="form-inline mt-5">
+        <div class="form-inline mt-5 custom-notes-field hidden">
             <label class="form-label sm:w-32">Catatan</label>
             <div class="flex-1">
                 <input
@@ -503,9 +504,10 @@ row.innerHTML = `
 
         document.addEventListener('click', function (e) {
             if (e.target.closest('.remove-item')) {
-                e.target.closest('tr').remove();
+                e.target.closest('.item-card').remove();
             }
         });
+
 
             document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-kerjakan');
@@ -531,29 +533,41 @@ row.innerHTML = `
         });
 
         document.addEventListener('change', function (e) {
-            const typeSelect = e.target.closest('select[name*="[item_type]"]');
-            if (!typeSelect) return;
 
+        const typeSelect = e.target.closest('select[name*="[item_type]"]');
+        if (typeSelect) {
             const card = typeSelect.closest('.item-card');
-            const product = card.querySelector('.product-field');
-            const service = card.querySelector('.service-field');
+            const productField = card.querySelector('.product-field');
+            const serviceField = card.querySelector('.service-field');
+            const customNameField = card.querySelector('.custom-name-field');
+            const customNotesField = card.querySelector('.custom-notes-field');
 
-            // hide all first
-            product.classList.add('hidden');
-            service.classList.add('hidden');
+            [productField, serviceField, customNameField, customNotesField].forEach(el => el?.classList.add('hidden'));
 
-            // reset value biar ga ke-submit
-            product.querySelector('select').value = '';
-            service.querySelector('select').value = '';
-
-            if (typeSelect.value === 'product') {
-                product.classList.remove('hidden');
+            const val = typeSelect.value;
+            if (val === 'product') productField?.classList.remove('hidden');
+            else if (val === 'service') serviceField?.classList.remove('hidden');
+            else if (val === 'custom') {
+                customNameField?.classList.remove('hidden');
+                customNotesField?.classList.remove('hidden');
             }
+        }
+        const itemSelect = e.target.closest(
+            'select[name*="[product_id]"], select[name*="[service_id]"]'
+        );
 
-            if (typeSelect.value === 'service') {
-                service.classList.remove('hidden');
+        if (itemSelect) {
+            const card = itemSelect.closest('.item-card');
+            const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            const priceInput = card.querySelector('input[name*="[unit_price]"]');
+
+            if (priceInput && price) {
+                priceInput.value = price;
             }
-        });
+        }
+    });
+
 
         document.getElementById('photos-preview').addEventListener('click', function(e){
             const btn = e.target.closest('.remove-image');
@@ -573,5 +587,11 @@ row.innerHTML = `
             // remove preview
             btn.closest('div').remove();
         });
+
+        setTimeout(() => {
+            document.querySelectorAll('select[name*="[item_type]"]').forEach(select => {
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }, 100);
     </script>
 @endpush
