@@ -41,6 +41,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function itemsOrder()
+    {
+        return $this->hasMany(OrderItem::class)->whereNotNull('item_id');
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class);

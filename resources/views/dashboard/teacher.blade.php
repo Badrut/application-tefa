@@ -1,4 +1,6 @@
 @extends('layouts.general')
+@section('title' , 'Teacher Dashboard')
+@section('page', 'Dashboard')
 @section('content')
                 <div class="">
                     <div class="grid grid-cols-12 gap-6">

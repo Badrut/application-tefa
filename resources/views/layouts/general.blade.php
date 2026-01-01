@@ -482,7 +482,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="javascript:;" class="top-menu">
+                        <a href="{{ route('order.index') }}" @class(['top-menu' , 'top-menu--active' => request()->routeIs('order*')])>
                             <div class="top-menu__icon"><i data-lucide="package"></i></div>
                             <div class="top-menu__title">Pesanan</div>
                         </a>

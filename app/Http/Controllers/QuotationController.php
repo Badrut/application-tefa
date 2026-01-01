@@ -57,135 +57,136 @@ class QuotationController extends Controller
     }
 
     public function store(Request $request)
-{
+    {
 
 
-    $validated = $request->validate([
-        'consultation_id'      => 'required|exists:consultations,id',
-        'valid_until'          => 'nullable|date',
+        $validated = $request->validate([
+            'consultation_id'      => 'required|exists:consultations,id',
+            'valid_until'          => 'nullable|date',
 
-        // items
-        'items'                => 'required|array|min:1',
-        'items.*.item_type'    => 'required|in:product,service,custom',
-        'items.*.product_id' => 'required_if:items.*.item_type,product|nullable|exists:products,id',
-        'items.*.service_id' => 'required_if:items.*.item_type,service|nullable|exists:services,id',
-        'items.*.item_name'    => 'nullable|string|max:255',
-        'items.*.quantity'     => 'required|integer|min:1',
-        'items.*.unit_price'   => 'required|numeric|min:0',
-        'items.*.notes'        => 'nullable|string|max:500',
+            // items
+            'items'                => 'required|array|min:1',
+            'items.*.item_type'    => 'required|in:product,service,custom',
+            'items.*.product_id' => 'required_if:items.*.item_type,product|nullable|exists:products,id',
+            'items.*.service_id' => 'required_if:items.*.item_type,service|nullable|exists:services,id',
+            'items.*.item_name'    => 'nullable|string|max:255',
+            'items.*.quantity'     => 'required|integer|min:1',
+            'items.*.unit_price'   => 'required|numeric|min:0',
+            'items.*.notes'        => 'nullable|string|max:500',
 
-        // photos
-        'photos'               => 'nullable|array|max:5',
-        'photos.*'             => 'image|mimes:jpg,jpeg,png|max:5120',
-    ]);
-
-    DB::beginTransaction();
-    $storedPaths = [];
-
-    try {
-
-        $consultation = Consultation::findOrFail($validated['consultation_id']);
-        $consultation->status = 'in_progress';
-        $consultation->save();
-
-        $today = now()->format('Ymd');
-        $countToday = Quotation::whereDate('created_at', now())->count() + 1;
-        $quotationCode = 'QT-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
-
-        // create quotation
-        $quotation = Quotation::create([
-            'quotation_code' => $quotationCode,
-            'consultation_id'=> $consultation->id,
-            'customer_id'    => $consultation->customer_id,
-            'valid_until'    => $validated['valid_until'] ?? null,
-            'status'         => 'draft',
-            'created_by'     => Auth::id(),
-            'total_amount'   => 0,
+            // photos
+            'photos'               => 'nullable|array|max:5',
+            'photos.*'             => 'image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        $total = 0;
+        DB::beginTransaction();
+        $storedPaths = [];
 
-        foreach ($validated['items'] as $item) {
-            $subtotal = $item['quantity'] * $item['unit_price'];
-            $total += $subtotal;
+        try {
 
-            $name = $item['item_name'] ?? null;
-            if ($item['item_type'] === 'product') {
-                $product = Product::findOrFail($item['product_id']);
-                $itemId = $product->id;
-                $itemName = $product->name;
-            }
+            $consultation = Consultation::findOrFail($validated['consultation_id']);
+            $consultation->status = 'in_progress';
+            $consultation->save();
 
-            if ($item['item_type'] === 'service') {
-                $service = Service::findOrFail($item['service_id']);
-                $itemId = $service->id;
-                $itemName = $service->name;
-            }
+            $today = now()->format('Ymd');
+            $countToday = Quotation::whereDate('created_at', now())->count() + 1;
+            $quotationCode = 'QT-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
 
-            if ($item['item_type'] === 'custom') {
-                $itemName = $item['item_name'];
-            }
-
-
-            QuotationItem::create([
-                'quotation_id' => $quotation->id,
-                'item_type'    => $item['item_type'],
-                'item_id'      => $itemId,
-                'item_name'    => $itemName,
-                'quantity'     => $item['quantity'],
-                'unit_price'   => $item['unit_price'],
-                'subtotal'     => $subtotal,
-                'notes'        => $item['notes'] ?? null,
+            // create quotation
+            $quotation = Quotation::create([
+                'quotation_code' => $quotationCode,
+                'consultation_id'=> $consultation->id,
+                'customer_id'    => $consultation->customer_id,
+                'valid_until'    => $validated['valid_until'] ?? null,
+                'status'         => 'draft',
+                'created_by'     => Auth::id(),
+                'total_amount'   => 0,
             ]);
-        }
 
-        $quotation->update(['total_amount' => $total]);
+            $total = 0;
 
-        // upload photos
-        if ($request->hasFile('photos')) {
-            $first = true;
+            foreach ($validated['items'] as $item) {
+                $subtotal = $item['quantity'] * $item['unit_price'];
+                $total += $subtotal;
 
-            foreach ($request->file('photos') as $file) {
-                $path = $file->store('quotations', 'public');
-                $storedPaths[] = $path;
+                $name = $item['item_name'] ?? null;
+                if ($item['item_type'] === 'product') {
+                    $product = Product::findOrFail($item['product_id']);
+                    $itemId = $product->id;
+                    $itemName = $product->name;
+                }
 
-                FileUpload::create([
-                    'reference_type' => Quotation::class,
-                    'reference_id'   => $quotation->id,
-                    'file_path'      => $path,
-                    'file_name'      => $file->getClientOriginalName(),
-                    'file_type'      => 'image',
-                    'mime_type'      => $file->getClientMimeType(),
-                    'size'           => $file->getSize(),
-                    'is_primary'     => $first,
+                if ($item['item_type'] === 'service') {
+                    $service = Service::findOrFail($item['service_id']);
+                    $itemId = $service->id;
+                    $itemName = $service->name;
+                }
+
+                if ($item['item_type'] === 'custom') {
+                    $itemName = $item['item_name'];
+                    $itemId = null;
+                }
+
+
+                QuotationItem::create([
+                    'quotation_id' => $quotation->id,
+                    'item_type'    => $item['item_type'],
+                    'item_id'      => $itemId,
+                    'item_name'    => $itemName,
+                    'quantity'     => $item['quantity'],
+                    'unit_price'   => $item['unit_price'],
+                    'subtotal'     => $subtotal,
+                    'notes'        => $item['notes'] ?? null,
                 ]);
-
-                $first = false;
             }
+
+            $quotation->update(['total_amount' => $total]);
+
+            // upload photos
+            if ($request->hasFile('photos')) {
+                $first = true;
+
+                foreach ($request->file('photos') as $file) {
+                    $path = $file->store('quotations', 'public');
+                    $storedPaths[] = $path;
+
+                    FileUpload::create([
+                        'reference_type' => Quotation::class,
+                        'reference_id'   => $quotation->id,
+                        'file_path'      => $path,
+                        'file_name'      => $file->getClientOriginalName(),
+                        'file_type'      => 'image',
+                        'mime_type'      => $file->getClientMimeType(),
+                        'size'           => $file->getSize(),
+                        'is_primary'     => $first,
+                    ]);
+
+                    $first = false;
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('proyek.index')
+                ->with('success', 'Quotation berhasil dibuat');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            foreach ($storedPaths as $path) {
+                try {
+                    Storage::disk('public')->delete($path);
+                } catch (\Throwable $__e) {}
+            }
+            dd($e->getMessage());
+            Log::error('Quotation store error: '.$e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('message', 'Gagal menyimpan quotation: '.$e->getMessage());
         }
-
-        DB::commit();
-
-        return redirect()
-            ->route('proyek.index')
-            ->with('success', 'Quotation berhasil dibuat');
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        foreach ($storedPaths as $path) {
-            try {
-                Storage::disk('public')->delete($path);
-            } catch (\Throwable $__e) {}
-        }
-        dd($e->getMessage());
-        Log::error('Quotation store error: '.$e->getMessage());
-
-        return back()
-            ->withInput()
-            ->with('message', 'Gagal menyimpan quotation: '.$e->getMessage());
     }
-}
 
 
     public function show(Quotation $quotation)

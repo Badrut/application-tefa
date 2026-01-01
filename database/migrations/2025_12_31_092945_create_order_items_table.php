@@ -16,8 +16,8 @@ return new class extends Migration
 
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
 
-            $table->enum('item_type', ['product', 'service']);
-            $table->unsignedBigInteger('item_id');
+            $table->enum('item_type', ['product', 'service' , 'custom']);
+            $table->unsignedBigInteger('item_id')->nullable();
 
             $table->integer('quantity');
             $table->decimal('unit_price', 15, 2);

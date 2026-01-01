@@ -67,7 +67,6 @@
                                                     </div>
                                                     <div class="text-slate-600 dark:text-slate-500 mt-5">
                                                         <div class="flex items-center"> <i data-lucide="link" class="w-4 h-4 mr-2"></i> Harga: Rp {{ number_format($product->base_price, 0, ',', '.') }}</div>
-                                                        <div class="flex items-center mt-2"> <i data-lucide="layers" class="w-4 h-4 mr-2"></i> Remaining Stock: 51 </div>
                                                         <div class="flex items-center mt-2"> <i data-lucide="check-square" class="w-4 h-4 mr-2"></i> Status: <span class="ml-2 px-2 py-0.5 text-xs rounded-md
                                                                 {{ $product->is_active ?
                                                                     'bg-success text-white/90' :

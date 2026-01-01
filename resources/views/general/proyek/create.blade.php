@@ -411,7 +411,7 @@ row.innerHTML = `
                 <select name="items[${index}][item_type]" class="form-control">
                     <option value="product">Produk</option>
                     <option value="service">Jasa</option>
-                    <option value="custom">Kastem</option>
+                    <option value="custom">Kustom</option>
                 </select>
             </div>
         </div>

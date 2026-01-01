@@ -30,8 +30,25 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function item()
+    public function product()
     {
-        return $this->morphTo(null, 'item_type', 'item_id');
+        return $this->belongsTo(Product::class, 'item_id')->where('id', $this->item_type === 'product' ? $this->item_id : null);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'item_id')->where('id', $this->item_type === 'service' ? $this->item_id : null);
+    }
+    public function getItemNameAttribute($value)
+    {
+        if ($this->item_type === 'product' && $this->product) {
+            return $this->product->name;
+        }
+
+        if ($this->item_type === 'service' && $this->service) {
+            return $this->service->name;
+        }
+
+        return $value;
     }
 }

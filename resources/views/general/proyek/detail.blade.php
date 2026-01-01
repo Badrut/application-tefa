@@ -18,12 +18,16 @@
                     <div class="intro-y flex flex-col sm:flex-row items-center mt-8">
                         <h2 class="text-lg font-medium mr-auto">
                             Detail Proyek Anda
-                            <div class="text-slate-500 text-sm mt-0.5 whitespace-nowrap">detail pesanan anda tertera di bawah silakan hubungi guru jika ada data yang tidak sesuai dan jika sudah sesuai silakan setujui pesanan anda</div>
+                            @if($quotation->status != 'approved')
+                                <div class="text-slate-500 text-sm mt-0.5 whitespace-nowrap">detail pesanan anda tertera di bawah silakan hubungi guru jika ada data yang tidak sesuai dan jika sudah sesuai silakan setujui pesanan anda</div>
+                            @endif
                         </h2>
-                        <form action="{{ route('quotations.approve' , $quotation) }}" method="POST" class="w-full sm:w-auto flex mt-4 sm:mt-0">
+                        @if($quotation->status != 'approved')
+                                                <form action="{{ route('quotations.approve' , $quotation) }}" method="POST" class="w-full sm:w-auto flex mt-4 sm:mt-0">
                             @csrf
                             <button class="btn btn-primary shadow-md mr-2">Setuju</button>
                         </form>
+                        @endif
                     </div>
                     <!-- BEGIN: Invoice -->
                     <div class="intro-y box overflow-hidden mt-5">

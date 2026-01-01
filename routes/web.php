@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function (){
     Route::delete('produksi/{id}', [ProduksiController::class, 'destroy'])->name('produksi.destroy');
 
     Route::get('order' , [OrderController::class , 'index'])->name('order.index');
+    Route::get('order/{order}' , [OrderController::class , 'show'])->name('order.show');
+    Route::post('order' , [OrderController::class , 'store'])->name('order.store');
+
+
 });
 
 Route::middleware(['auth' , 'role:admin'])->group(function () {
@@ -109,6 +113,8 @@ Route::middleware(['auth' , 'role:customer'])->group(function () {
 
     Route::post('/quotations/{quotation}/approve', [OrderController::class, 'approve'])
     ->name('quotations.approve');
+
+    Route::delete('/order/{order}', [OrderController::class, 'destroy'])->name('order.delete');
 });
 
 Route::middleware(['auth' , 'role:supplier'])->group(function () {
